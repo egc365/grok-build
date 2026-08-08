@@ -246,29 +246,34 @@ name = "CodeLlama (Ollama)"
 
 Make sure Ollama is running (`ollama serve`) and the model is pulled (`ollama pull codellama`).
 
-To run the local Gemma 4 12B model as Grok Build's agent—with Grok's normal
-terminal, file, search, MCP, hook, and workspace tools—configure the model
+To run the local Gemma 4 12B model as a Grok Build agent, configure the model
 itself rather than wrapping it as a separate tool:
 
 ```toml
 [model."gemma4-12b:latest"]
 model = "gemma4-12b:latest"
 base_url = "http://127.0.0.1:11435/v1"
-name = "Gemma 4 12B Local (Grok Tools)"
+name = "Gemma 4 12B Local (Grok Native Core)"
+description = "Local Gemma 4 12B with a compatibility-tested Grok Build native tool profile"
 api_key = "ollama"
 api_backend = "chat_completions"
 temperature = 0.1
 top_p = 0.9
-max_completion_tokens = 16384
+max_completion_tokens = 4096
 context_window = 262144
 stream_tool_calls = false
 ```
 
-Select it without changing the configured default:
+Small local models can confuse the stock MCP prompt with native file tools. The
+included `gemma-search` profile uses a bounded set of Grok Build's native file
+and local-search tools with an explicit compatibility prompt:
 
 ```bash
-grok -m 'gemma4-12b:latest'
+bin/gemma-search
 ```
+
+This launches the normal Grok chat UI. It does not install an MCP server or a
+second file-writing implementation.
 
 ### Together AI
 
