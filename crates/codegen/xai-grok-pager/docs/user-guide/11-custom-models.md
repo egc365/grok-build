@@ -280,6 +280,20 @@ context_window = 262144
 stream_tool_calls = false
 ```
 
+Enable and display Gemma's thinking stream explicitly:
+
+```toml
+[models]
+default_reasoning_effort = "high"
+
+[ui]
+show_thinking_blocks = true
+```
+
+The included launcher also passes `--reasoning-effort high`, so Ollama's
+OpenAI-compatible endpoint enables thinking and Grok renders returned
+`reasoning_content` as collapsible thought blocks.
+
 The Grok `context_window` value must match Ollama's runtime `num_ctx`; the GGUF
 metadata maximum alone does not allocate that runtime context. The included
 launcher selects this model without an agent override, so Grok supplies its

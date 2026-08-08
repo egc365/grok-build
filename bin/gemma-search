@@ -9,4 +9,4 @@ if test -n "$extraction_pids"; then
   exit 75
 fi
 
-exec grok -m 'gemma4-12b:grok-262k' "$@"
+exec grok -m 'gemma4-12b:grok-262k' --reasoning-effort high "$@"
