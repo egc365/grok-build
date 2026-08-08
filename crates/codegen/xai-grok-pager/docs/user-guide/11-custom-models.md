@@ -247,33 +247,50 @@ name = "CodeLlama (Ollama)"
 Make sure Ollama is running (`ollama serve`) and the model is pulled (`ollama pull codellama`).
 
 To run the local Gemma 4 12B model as a Grok Build agent, configure the model
-itself rather than wrapping it as a separate tool:
+itself rather than wrapping it as a separate tool. First create a local tag
+whose served context is large enough for Grok's complete system prompt and
+native tool catalog:
+
+```text
+FROM gemma4-12b:latest
+PARAMETER num_ctx 32768
+```
+
+Save that as a Modelfile and run:
+
+```bash
+OLLAMA_HOST=http://127.0.0.1:11435 \
+  ollama create gemma4-12b:grok-32k -f ./Modelfile
+```
+
+Then register the matching Grok model:
 
 ```toml
-[model."gemma4-12b:latest"]
-model = "gemma4-12b:latest"
+[model."gemma4-12b:grok-32k"]
+model = "gemma4-12b:grok-32k"
 base_url = "http://127.0.0.1:11435/v1"
-name = "Gemma 4 12B Local (Grok Native Core)"
-description = "Local Gemma 4 12B with a compatibility-tested Grok Build native tool profile"
+name = "Gemma 4 12B Local (Grok Full Tools, 32K)"
+description = "Local Gemma 4 12B using Grok Build's complete native tool harness"
 api_key = "ollama"
 api_backend = "chat_completions"
 temperature = 0.1
 top_p = 0.9
-max_completion_tokens = 4096
-context_window = 262144
+max_completion_tokens = 8192
+context_window = 32768
 stream_tool_calls = false
 ```
 
-Small local models can confuse the stock MCP prompt with native file tools. The
-included `gemma-search` profile uses a bounded set of Grok Build's native file
-and local-search tools with an explicit compatibility prompt:
+The Grok `context_window` value must match Ollama's runtime `num_ctx`; the GGUF
+metadata maximum alone does not allocate that runtime context. The included
+launcher selects this model without an agent override, so Grok supplies its
+normal system prompt, skills, MCP integrations, and complete native tool catalog:
 
 ```bash
 bin/gemma-search
 ```
 
-This launches the normal Grok chat UI. It does not install an MCP server or a
-second file-writing implementation.
+This launches the normal Grok chat UI. It does not install an MCP server,
+replace Grok's tools, or narrow the tool catalog.
 
 ### Together AI
 

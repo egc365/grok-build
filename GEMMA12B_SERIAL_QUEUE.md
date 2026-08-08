@@ -2,25 +2,24 @@
 
 Status: queued; owner interactive test pending.
 
-Automated preflight receipt (2026-08-08): the compatibility profile invoked
-Grok Build's native `write` tool in a cold process and created exactly six
-bytes, `hello\n` (SHA-256
-`5891b5b522d5df086d0ff0b110fbd9d21bb4fc7163af34d08286a2e846f6be03`). Its
-native `grep` tool also located this queue by its exact heading. These checks
-validate the harness but do not advance Q01, which still requires the owner's
-interactive test.
+Automated full-harness receipt (2026-08-08): stock Grok Build, with no custom
+agent profile and its complete 29-tool catalog, invoked native file tools from
+a cold process. It created exactly five bytes, `hello` (SHA-256
+`2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824`),
+then read the exact content back. The local Ollama tag and Grok configuration
+both used a 32,768-token context. These checks validate the harness but do not
+advance Q01, which still requires the owner's interactive test.
 
 Run exactly one item at a time. Record the model digest, input locator,
 commands, output hash, measured result, and pass/fail receipt before advancing.
 Stop the queue on failure. Do not promote generated work from this queue.
 
 - [ ] **Q01 — Owner interactive smoke test.** Run `gemma-search` and confirm
-  Grok exposes the compatibility-tested native core tool catalog.
+  Grok exposes its complete native tool catalog and configured integrations.
 - [ ] **Q02 — Native read/search test.** Locate repository instructions and one
   exact source file without mutation.
-- [ ] **Q03 — Native terminal compatibility test.** Resolve Grok Build's
-  curated-profile auto-background dependency error, then run one bounded
-  read-only command and capture its exit status.
+- [ ] **Q03 — Native terminal compatibility test.** Run one bounded read-only
+  command through the normal Grok terminal tool and capture its exit status.
 - [ ] **Q04 — Scratch write test.** Create and revise one explicitly disposable
   file; verify path enforcement and cleanup.
 - [ ] **Q05 — Qwen retrieval test.** Call the approved Qwen retrieval command
