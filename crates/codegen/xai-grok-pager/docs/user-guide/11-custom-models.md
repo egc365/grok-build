@@ -308,7 +308,10 @@ replace Grok's tools, or narrow the tool catalog.
 
 The launcher refuses to load Gemma while a MinerU or serial structure/span
 extraction is active. Both workloads use the same unified CPU/GPU memory on
-supported systems; run them serially.
+supported systems; run them serially. When the GPU lane is free, the launcher
+starts `ontology-ollama.service` if needed and waits for a successful
+`http://127.0.0.1:11434/api/version` response before opening Grok. Use
+`gemma-search`, not a bare `grok`, when selecting this local model.
 
 ### Together AI
 

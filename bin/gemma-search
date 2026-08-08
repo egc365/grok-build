@@ -1,12 +1,33 @@
 #!/bin/sh
 set -eu
 
-extraction_pids=$(pgrep -f 'rag-structure-span-v2|structure-span-v2|serial_ingest|serial-ingest|mineru' 2>/dev/null | paste -sd, - || true)
+extraction_pids=$(
+  ps -eo pid=,comm=,args= | awk '
+    $2 ~ /^(python|python3|mineru)$/ &&
+    $0 ~ /\/(run_structure_span_v2_queue|serial_ingest|mineru_runner|qwen3_embed)\.py|\/rag\/venv\/bin\/mineru / {
+      print $1
+    }
+  ' | paste -sd, -
+)
 if test -n "$extraction_pids"; then
   printf 'gemma-search: GPU extraction is active (PID%s %s); refusing a concurrent model load.\n' \
     "$(printf '%s' "$extraction_pids" | grep -q ',' && printf 's' || true)" "$extraction_pids" >&2
   printf 'Wait for the extraction to finish, then run gemma-search again.\n' >&2
   exit 75
+fi
+
+if ! curl -fsS --max-time 1 http://127.0.0.1:11434/api/version >/dev/null 2>&1; then
+  systemctl --user start ontology-ollama.service
+  attempt=0
+  while ! curl -fsS --max-time 1 http://127.0.0.1:11434/api/version >/dev/null 2>&1; do
+    attempt=$((attempt + 1))
+    if test "$attempt" -ge 20; then
+      printf 'gemma-search: Ollama did not become healthy at 127.0.0.1:11434.\n' >&2
+      systemctl --user --no-pager status ontology-ollama.service >&2 || true
+      exit 69
+    fi
+    sleep 0.25
+  done
 fi
 
 exec grok -m 'gemma4-12b:grok-262k' --reasoning-effort high "$@"
