@@ -259,7 +259,7 @@ PARAMETER num_ctx 32768
 Save that as a Modelfile and run:
 
 ```bash
-OLLAMA_HOST=http://127.0.0.1:11435 \
+OLLAMA_HOST=http://127.0.0.1:11434 \
   ollama create gemma4-12b:grok-32k -f ./Modelfile
 ```
 
@@ -268,7 +268,7 @@ Then register the matching Grok model:
 ```toml
 [model."gemma4-12b:grok-32k"]
 model = "gemma4-12b:grok-32k"
-base_url = "http://127.0.0.1:11435/v1"
+base_url = "http://127.0.0.1:11434/v1"
 name = "Gemma 4 12B Local (Grok Full Tools, 32K)"
 description = "Local Gemma 4 12B using Grok Build's complete native tool harness"
 api_key = "ollama"

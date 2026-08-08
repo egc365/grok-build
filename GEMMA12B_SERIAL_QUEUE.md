@@ -7,8 +7,10 @@ agent profile and its complete 29-tool catalog, invoked native file tools from
 a cold process. It created exactly five bytes, `hello` (SHA-256
 `2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824`),
 then read the exact content back. The local Ollama tag and Grok configuration
-both used a 32,768-token context. These checks validate the harness but do not
-advance Q01, which still requires the owner's interactive test.
+both used a 32,768-token context. The run overlapped a GPU extraction job and
+was followed by system memory exhaustion, so future Gemma tests must be run
+serially with extraction/GPU monitoring. The functional check does not advance
+Q01, which still requires the owner's interactive test.
 
 Run exactly one item at a time. Record the model digest, input locator,
 commands, output hash, measured result, and pass/fail receipt before advancing.
