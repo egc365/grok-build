@@ -1,4 +1,12 @@
 #!/bin/sh
 set -eu
 
-exec grok -m 'gemma4-12b:grok-32k' "$@"
+extraction_pids=$(pgrep -f 'rag-structure-span-v2|structure-span-v2|serial_ingest|serial-ingest|mineru' 2>/dev/null | paste -sd, - || true)
+if test -n "$extraction_pids"; then
+  printf 'gemma-search: GPU extraction is active (PID%s %s); refusing a concurrent model load.\n' \
+    "$(printf '%s' "$extraction_pids" | grep -q ',' && printf 's' || true)" "$extraction_pids" >&2
+  printf 'Wait for the extraction to finish, then run gemma-search again.\n' >&2
+  exit 75
+fi
+
+exec grok -m 'gemma4-12b:grok-262k' "$@"

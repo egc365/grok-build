@@ -248,35 +248,35 @@ Make sure Ollama is running (`ollama serve`) and the model is pulled (`ollama pu
 
 To run the local Gemma 4 12B model as a Grok Build agent, configure the model
 itself rather than wrapping it as a separate tool. First create a local tag
-whose served context is large enough for Grok's complete system prompt and
-native tool catalog:
+that exposes the model's full 262,144-token context to Grok's complete system
+prompt and native tool catalog:
 
 ```text
 FROM gemma4-12b:latest
-PARAMETER num_ctx 32768
+PARAMETER num_ctx 262144
 ```
 
 Save that as a Modelfile and run:
 
 ```bash
 OLLAMA_HOST=http://127.0.0.1:11434 \
-  ollama create gemma4-12b:grok-32k -f ./Modelfile
+  ollama create gemma4-12b:grok-262k -f ./Modelfile
 ```
 
 Then register the matching Grok model:
 
 ```toml
-[model."gemma4-12b:grok-32k"]
-model = "gemma4-12b:grok-32k"
+[model."gemma4-12b:grok-262k"]
+model = "gemma4-12b:grok-262k"
 base_url = "http://127.0.0.1:11434/v1"
-name = "Gemma 4 12B Local (Grok Full Tools, 32K)"
-description = "Local Gemma 4 12B using Grok Build's complete native tool harness"
+name = "Gemma 4 12B Local (Grok Full Tools, 262K)"
+description = "Local Gemma 4 12B at its full advertised context using Grok Build's complete native tool harness"
 api_key = "ollama"
 api_backend = "chat_completions"
 temperature = 0.1
 top_p = 0.9
 max_completion_tokens = 8192
-context_window = 32768
+context_window = 262144
 stream_tool_calls = false
 ```
 
@@ -291,6 +291,10 @@ bin/gemma-search
 
 This launches the normal Grok chat UI. It does not install an MCP server,
 replace Grok's tools, or narrow the tool catalog.
+
+The launcher refuses to load Gemma while a MinerU or serial structure/span
+extraction is active. Both workloads use the same unified CPU/GPU memory on
+supported systems; run them serially.
 
 ### Together AI
 
